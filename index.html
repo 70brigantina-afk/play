@@ -59,23 +59,39 @@ function gate(x){return 'Здравствуйте! Меня зовут Ирин�
 function lpr(x){return 'Здравствуйте! Меня зовут Ирина. Я посмотрела ваш запрос «'+x[0]+'». Вижу, что вам нужно: '+x[1]+'. Я могу взять эту задачу на себя. Предлагаю сначала коротко уточнить цель и текущую ситуацию, после чего я назову конкретный план, срок и стоимость. Удобно сейчас 3–5 минут поговорить?'}
 function contactLinks(x){let v=x[3];let out='';if(v.startsWith('@')){let u=v.slice(1);out+='<a class="tg" target="_blank" href="https://t.me/'+u+'">Telegram</a>'}let p=v.replace(/[^0-9+]/g,'');if(/^\+?\d{10,}$/.test(p)){let n=p.replace(/\D/g,'');out+='<a target="_blank" href="tel:'+p+'">Позвонить</a><a class="wa" target="_blank" href="https://wa.me/'+n+'">WhatsApp</a>'}if(v.includes('@')&&!v.startsWith('@'))out+='<a target="_blank" href="mailto:'+v+'">Email</a>';return out}
 function render(){
- const query=document.getElementById('q').value.toLowerCase(), status=document.getElementById('s').value;
- const rows=raw.map((x,i)=>[x,i]).filter(([x,i])=>(!query||x.join(' ').toLowerCase().includes(query))&&(status==='Все статусы'||(localStorage.getItem('h'+i)||'не писала')===status));
- document.getElementById('g').innerHTML=rows.map(([x,i])=>{
-  const links=contactLinks(x), st=localStorage.getItem('h'+i)||'не писала', note=localStorage.getItem('note'+i)||'', who=localStorage.getItem('who'+i)||'', phone=localStorage.getItem('phone'+i)||'';
-  return '<div class="c"><div class="m">№'+(i+1)+' • проверено 25.09.2026</div><div class="p">🔥 ПРИОРИТЕТ</div><h3>'+x[0]+'</h3><p>'+x[1]+'</p><div class="b">💰 '+x[2]+'</div>'+
-  '<div class="contact"><b>Контакты:</b> '+x[3]+'</div><div class="links">'+links+'<a target="_blank" href="'+x[4]+'">Источник</a></div>'+
-  '<div class="tools"><div class="box"><b>Отзывы и репутация</b><span class="m">Отзывы для этой записи ещё нужно подтвердить по источнику/бизнесу.</span></div>'+
-  '<div class="box"><b>Контакты и каналы связи</b>'+(links||'<span class="m">Отдельного телефона или мессенджера в сохранённых данных нет.</span>')+'</div>'+
-  '<div class="box"><b>Что понравилось / за что похвалить</b>'+x[1]+'.</div><div class="box"><b>Отзыв-крючок</b>Начать с конкретной сильной стороны и задачи клиента, а не с шаблонной продажи.</div>'+
-  '<div class="box"><b>Что предложить именно им</b>'+x[1]+'. Уточнить цель, сроки, материалы и источник клиентов.</div>'+
-  '<div class="box"><b>Данные для звонка</b><input class="notes" style="min-height:0" placeholder="Имя / компания / должность" value="'+who.replace(/"/g,'&quot;')+'" oninput="localStorage.setItem(\'who'+i+'\',this.value)"><br><br><input class="notes" style="min-height:0" placeholder="Телефон / дополнительный контакт" value="'+phone.replace(/"/g,'&quot;')+'" oninput="localStorage.setItem(\'phone'+i+'\',this.value)"></div>'+
-  '<div class="box full"><b>Сообщение клиенту</b>'+message(x)+'<br><button class="copy" onclick="navigator.clipboard.writeText(message(raw['+i+']))">Копировать сообщение</button></div>'+
-  '<div class="box"><b>Если трубку взял не ЛПР</b>'+gate(x)+'<br><button class="copy" onclick="navigator.clipboard.writeText(gate(raw['+i+']))">Копировать</button></div>'+
-  '<div class="box"><b>Разговор с ЛПР</b>'+lpr(x)+'<br><button class="copy" onclick="navigator.clipboard.writeText(lpr(raw['+i+']))">Копировать</button></div>'+
-  '<div class="box full"><b>Мои комментарии</b><textarea class="notes" placeholder="Что ответили, имя ЛПР, когда перезвонить, договорённости..." oninput="localStorage.setItem(\'note'+i+'\',this.value)">'+note+'</textarea></div></div>'+
-  '<select onchange="localStorage.setItem(\'h'+i+'\',this.value);render()">'+['не писала','написала','ответил','созвон','заказ','в работе','сделано'].map(v=>'<option '+(st===v?'selected':'')+'>'+v+'</option>').join('')+'</select> <button onclick="localStorage.setItem(\'make'+i+'\',\'1\');alert(\'Клиент отмечен для создания сайта\')">Создать сайт</button></div>';
- }).join('');
+ const grid=document.getElementById('g'); grid.innerHTML='';
+ const query=document.getElementById('q').value.toLowerCase();
+ const wanted=document.getElementById('s').value;
+ raw.forEach((x,i)=>{
+  const st=localStorage.getItem('h'+i)||'не писала';
+  if(query&&!x.join(' ').toLowerCase().includes(query))return;
+  if(wanted!=='Все статусы'&&wanted!==st)return;
+  const card=document.createElement('div'); card.className='c';
+  const top=document.createElement('div'); top.className='m'; top.textContent='№'+(i+1)+' • заказ из базы';
+  const pr=document.createElement('div'); pr.className='p'; pr.textContent='🔥 ПРИОРИТЕТ';
+  const h=document.createElement('h3'); h.textContent=x[0];
+  const task=document.createElement('p'); task.textContent=x[1];
+  const money=document.createElement('div'); money.className='b'; money.textContent='💰 '+x[2];
+  const contact=document.createElement('div'); contact.className='contact'; contact.innerHTML='<b>Контакт:</b> '; contact.append(document.createTextNode(x[3]));
+  const links=document.createElement('div'); links.className='links'; links.innerHTML=contactLinks(x)+'<a target="_blank" href="'+x[4]+'">Источник заказа</a>';
+  const tools=document.createElement('div'); tools.className='tools';
+  function box(title,txt,full){const d=document.createElement('div');d.className='box'+(full?' full':'');const b=document.createElement('b');b.textContent=title;d.append(b,document.createTextNode(txt));return d}
+  tools.append(
+   box('Отзывы и репутация','Показывать здесь только подтверждённые отзывы. Для этой записи они пока не добавлены.'),
+   box('Контакты и каналы связи',x[3]),
+   box('Что понравилось / за что похвалить',x[1]+'.'),
+   box('Отзыв-крючок','Начать с конкретной сильной стороны клиента или его задачи.'),
+   box('Что предложить именно им',x[1]+'. Уточнить цель, сроки, материалы и источник клиентов.'),
+   box('Сообщение клиенту',message(x),true),
+   box('Если трубку взял не ЛПР',gate(x)),
+   box('Разговор с ЛПР',lpr(x))
+  );
+  const msg=tools.children[5], gateBox=tools.children[6], lprBox=tools.children[7];
+  [[msg,'Копировать сообщение',message(x)],[gateBox,'Копировать',gate(x)],[lprBox,'Копировать',lpr(x)]].forEach(z=>{const br=document.createElement('br'),bt=document.createElement('button');bt.className='copy';bt.textContent=z[1];bt.onclick=()=>navigator.clipboard.writeText(z[2]);z[0].append(br,bt)});
+  const notes=box('Мои комментарии','',true), ta=document.createElement('textarea'); ta.className='notes';ta.placeholder='Что ответили, имя ЛПР, когда перезвонить, договорённости...';ta.value=localStorage.getItem('note'+i)||'';ta.oninput=()=>localStorage.setItem('note'+i,ta.value);notes.append(ta);tools.append(notes);
+  const sel=document.createElement('select'); ['не писала','написала','ответил','созвон','заказ','в работе','сделано'].forEach(v=>{const o=document.createElement('option');o.textContent=v;o.value=v;if(v===st)o.selected=true;sel.append(o)});sel.onchange=()=>{localStorage.setItem('h'+i,sel.value);render()};
+  card.append(top,pr,h,task,money,contact,links,tools,sel); grid.append(card);
+ });
 }
 q.oninput=render;s.onchange=render;render();
 </script>
