@@ -1,14 +1,107 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Охотник — проектные заказы</title>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Охотник — проектные заказы</title>
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#17202a;--muted:#657089;--accent:#111827;--good:#087443;--line:#e5e7eb}*{box-sizing:border-box}body{margin:0;font:15px/1.5 Arial,sans-serif;background:var(--bg);color:var(--ink)}main{max-width:1280px;margin:auto;padding:24px}header{background:linear-gradient(135deg,#111827,#26344f);color:#fff;padding:28px;border-radius:20px;box-shadow:0 14px 35px rgba(17,24,39,.15)}h1{margin:0 0 7px;font-size:36px}.sub{opacity:.9}.rules{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.pill{background:rgba(255,255,255,.12);padding:7px 10px;border-radius:999px;font-size:12px}.notice{background:#fff7e8;border:1px solid #f4d99c;padding:14px 16px;border-radius:14px;margin:16px 0}.f{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.f input,.f select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;min-width:180px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.c{background:var(--card);padding:18px;border-radius:16px;box-shadow:0 5px 18px rgba(17,24,39,.06);border:1px solid #edf0f5}.meta{color:var(--muted);font-size:12px}.tag{display:inline-block;background:#e9f8f0;color:var(--good);font-weight:700;padding:6px 9px;border-radius:9px;margin:8px 0}.money{font-weight:700;font-size:17px}.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.btn,button{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border:0;padding:10px 12px;border-radius:9px;cursor:pointer}.copy{background:#eef1f6;color:#17202a}.box{background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:11px;margin-top:10px}.box b{display:block;margin-bottom:6px}.msg{white-space:pre-wrap}.notes{width:100%;min-height:60px;border:1px solid var(--line);border-radius:9px;padding:9px}.empty{background:#fff;padding:26px;border-radius:16px;text-align:center;color:var(--muted);grid-column:1/-1}.status{margin-top:10px;padding:9px;border-radius:9px;border:1px solid var(--line);background:#fff}@media(max-width:850px){.grid{grid-template-columns:1fr}main{padding:14px}h1{font-size:29px}}
-</style></head><body><main>
-<header><h1>Охотник</h1><div class="sub">Только проектные заказы • сайты • Яндекс Директ • AI • независимая работа</div><div class="rules"><span class="pill">НЕ вакансии</span><span class="pill">НЕ 5/2</span><span class="pill">НЕ Jabka / FL / Freelance.ru</span><span class="pill">НЕ платные отклики</span><span class="pill">НЕ AI-видео</span><span class="pill">Всегда готовое сообщение</span></div></header>
-<div class="notice"><b>Правило Охотника:</b> показываются только заказы, где Ирина берёт конкретный проект, выполняет его или ведёт за оплату как независимый специалист. Штатные вакансии и трудоустройство сюда больше не попадают.</div>
-<div class="f"><input id="q" placeholder="Поиск по проектам"><select id="kind"><option value="">Все направления</option><option>Сайт</option><option>Яндекс Директ</option><option>AI</option><option>Дизайн</option><option>Автоматизация</option></select><select id="s"><option>Все статусы</option><option>не писала</option><option>написала</option><option>ответил</option><option>созвон</option><option>заказ</option><option>в работе</option><option>сделано</option></select></div>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#111827;--muted:#667085;--line:#e5e7eb;--green:#0a7a4b;--amber:#9a6700;--soft:#f8fafc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,sans-serif}
+main{max-width:1240px;margin:auto;padding:24px}
+header{background:linear-gradient(135deg,#111827,#24334f);color:white;padding:28px;border-radius:20px;box-shadow:0 14px 35px rgba(17,24,39,.15)}
+h1{font-size:38px;margin:0 0 5px}.sub{opacity:.9;font-size:16px}
+.rules,.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px}
+.stats{margin:18px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 16px;min-width:190px}.stat b{display:block;font-size:21px}.stat span{color:var(--muted);font-size:12px}
+.alert{background:#fff8e8;border:1px solid #f0d395;padding:14px 16px;border-radius:14px;margin:15px 0}
+.good{background:#ecfdf3;border-color:#b7ebcf}.good b{color:var(--green)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.filters input,.filters select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 12px;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card,.empty{background:var(--card);border:1px solid #edf0f5;border-radius:16px;padding:18px;box-shadow:0 5px 18px rgba(17,24,39,.05)}
+.meta{font-size:12px;color:var(--muted)}.tag{display:inline-block;margin:8px 0;padding:6px 9px;border-radius:9px;background:#ecfdf3;color:var(--green);font-weight:700}
+.money{font-size:17px;font-weight:700}.box{margin-top:10px;padding:11px;border:1px solid var(--line);border-radius:11px;background:var(--soft)}.box b{display:block;margin-bottom:5px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.btn,button{border:0;border-radius:9px;background:#111827;color:#fff;text-decoration:none;padding:10px 12px;cursor:pointer}.copy{background:#eef1f6;color:#17202a}
+.msg{white-space:pre-wrap}.notes{width:100%;min-height:58px;border:1px solid var(--line);border-radius:9px;padding:9px}.status{margin-top:10px;border:1px solid var(--line);border-radius:9px;padding:9px;background:#fff}
+.empty{grid-column:1/-1;text-align:center;padding:32px}.empty strong{display:block;font-size:20px;margin-bottom:8px}.empty p{max-width:760px;margin:6px auto;color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+@media(max-width:850px){main{padding:14px}.grid{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+</head>
+<body><main>
+<header>
+<h1>Охотник</h1>
+<div class="sub">Точечный поиск проектных заказов для Ирины</div>
+<div class="rules">
+<span class="pill">Только проекты — не найм</span>
+<span class="pill">Сначала последние 24 часа</span>
+<span class="pill">Телефон / e-mail / WhatsApp / MAX / VK / форма</span>
+<span class="pill">Telegram-only не показываем</span>
+<span class="pill">Без FL.ru / Freelance.ru / Jabka</span>
+<span class="pill">Без платных откликов</span>
+<span class="pill">Без AI-видео</span>
+<span class="pill">К каждому заказу — готовое сообщение</span>
+</div>
+</header>
+
+<div class="stats">
+<div class="stat"><b id="count">0</b><span>проверенных проектов сейчас</span></div>
+<div class="stat"><b>27.09.2026</b><span>последняя ручная проверка</span></div>
+<div class="stat"><b>08:00 МСК</b><span>ежедневный запуск Охотника</span></div>
+</div>
+
+<div class="alert good"><b>Главное правило:</b> лучше 0–3 сильных заказа с реальным контактом, чем 20 сомнительных. Охотник не добивает количество старыми объявлениями.</div>
+<div class="alert"><b>Почему свежая выдача может быть пустой:</b> если заказ есть, но связаться можно только через Telegram, если отклик платный, проект закрыт, это работа по найму или объявление старое — карточка сюда не попадает.</div>
+
+<div class="filters">
+<input id="q" placeholder="Поиск по проектам">
+<select id="kind"><option value="">Все направления</option><option>Сайт</option><option>Яндекс Директ</option><option>AI</option><option>Дизайн</option><option>Автоматизация</option></select>
+<select id="s"><option>Все статусы</option><option>не писала</option><option>написала</option><option>ответил</option><option>созвон</option><option>заказ</option><option>в работе</option><option>сделано</option></select>
+</div>
 <div id="g" class="grid"></div>
-</main><script>
-const raw=[];
+
+<p class="small">Портфолио для откликов: https://irina.iamcore.ru/</p>
+</main>
+<script>
+const raw = [];
+document.getElementById('count').textContent = raw.length;
 function keyOf(x){return (x.title+'_'+x.source).replace(/[^a-zA-Z0-9а-яА-Я_+]/g,'_')}
-function render(){const g=document.getElementById('g');g.innerHTML='';const q=document.getElementById('q').value.toLowerCase();const k=document.getElementById('kind').value;const wanted=document.getElementById('s').value;let shown=0;raw.forEach((x,i)=>{const key=keyOf(x),st=localStorage.getItem('h_'+key)||'не писала';const hay=JSON.stringify(x).toLowerCase();if(q&&!hay.includes(q))return;if(k&&x.kind!==k)return;if(wanted!=='Все статусы'&&st!==wanted)return;shown++;const c=document.createElement('article');c.className='c';c.innerHTML=`<div class="meta">№${i+1} • ${x.date} • ${x.source}</div><div class="tag">${x.kind} • проект</div><h3>${x.title}</h3><p>${x.task}</p><div class="money">💰 ${x.budget||'Бюджет не указан'}</div><div class="box"><b>Проверка актуальности</b>${x.verified}</div><div class="row"><a class="btn" target="_blank" rel="noopener" href="${x.url}">Открыть проект / написать</a></div><div class="box"><b>Что приложить</b>${x.resume||'Портфолио: https://irina.iamcore.ru/'}</div><div class="box msg"><b>Готовое сообщение заказчику</b>${x.message}<br><br><button class="copy" data-msg="${encodeURIComponent(x.message)}">Копировать сообщение</button></div><div class="box"><b>Риски / что проверить</b>${x.risks||'Нет явных рисков; перед откликом ещё раз проверить, что проект открыт.'}</div><div class="box"><b>Мои заметки</b><textarea class="notes" data-key="${key}" placeholder="Что ответили, сроки, договорённости..."></textarea></div><select class="status" data-key="${key}">${['не писала','написала','ответил','созвон','заказ','в работе','сделано'].map(v=>`<option ${v===st?'selected':''}>${v}</option>`).join('')}</select>`;g.append(c)});if(!shown){g.innerHTML='<div class="empty"><b>Сейчас в свежей выдаче нет проверенных проектных заказов.</b><br>Охотник не будет подсовывать вакансии по найму или сомнительные старые объявления ради количества.</div>'}document.querySelectorAll('.copy').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(decodeURIComponent(b.dataset.msg)));document.querySelectorAll('.notes').forEach(t=>{const key=t.dataset.key;t.value=localStorage.getItem('note_'+key)||'';t.oninput=()=>localStorage.setItem('note_'+key,t.value)});document.querySelectorAll('.status').forEach(s=>s.onchange=()=>{localStorage.setItem('h_'+s.dataset.key,s.value);render()})}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(){
+ const g=document.getElementById('g'); g.innerHTML='';
+ const q=document.getElementById('q').value.toLowerCase();
+ const k=document.getElementById('kind').value;
+ const wanted=document.getElementById('s').value;
+ let shown=0;
+ raw.forEach((x,i)=>{
+   const key=keyOf(x), st=localStorage.getItem('h_'+key)||'не писала';
+   if(q&&!JSON.stringify(x).toLowerCase().includes(q))return;
+   if(k&&x.kind!==k)return;
+   if(wanted!=='Все статусы'&&st!==wanted)return;
+   shown++;
+   const c=document.createElement('article'); c.className='card';
+   c.innerHTML=`
+   <div class="meta">№${i+1} • ${esc(x.date)} • ${esc(x.source)}</div>
+   <div class="tag">${esc(x.kind)} • проект</div>
+   <h3>${esc(x.title)}</h3>
+   <p>${esc(x.task)}</p>
+   <div class="money">💰 ${esc(x.budget||'Бюджет не указан')}</div>
+   <div class="box"><b>Контакт без Telegram</b>${esc(x.contact)}</div>
+   <div class="box"><b>Проверка</b>${esc(x.verified)}</div>
+   <div class="row"><a class="btn" target="_blank" rel="noopener" href="${esc(x.url)}">Открыть / связаться</a></div>
+   <div class="box"><b>Что приложить</b>${esc(x.attach||'Портфолио: https://irina.iamcore.ru/')}</div>
+   <div class="box msg"><b>Готовое сообщение</b>${esc(x.message)}<br><br><button class="copy" data-copy="${encodeURIComponent(x.message||'')}">Копировать сообщение</button></div>
+   ${x.callScript?`<div class="box msg"><b>Скрипт звонка</b>${esc(x.callScript)}<br><br><button class="copy" data-copy="${encodeURIComponent(x.callScript)}">Копировать скрипт</button></div>`:''}
+   <div class="box"><b>Риски / что уточнить</b>${esc(x.risks||'Перед контактом ещё раз проверить актуальность.')}</div>
+   <div class="box"><b>Мои заметки</b><textarea class="notes" data-key="${key}" placeholder="Что ответили, имя, когда перезвонить, договорённости..."></textarea></div>
+   <select class="status" data-key="${key}">${['не писала','написала','ответил','созвон','заказ','в работе','сделано'].map(v=>`<option ${v===st?'selected':''}>${v}</option>`).join('')}</select>`;
+   g.append(c);
+ });
+ if(!shown){
+   g.innerHTML='<div class="empty"><strong>Сейчас нет проектов, прошедших строгий фильтр.</strong><p>Сегодня найденные свежие варианты не прошли проверку по контакту или формату. Я не подставляю сюда старые вакансии и Telegram-only заказы только ради количества.</p><p><b>Как только появится свежий проект с телефоном, e-mail, WhatsApp, MAX, VK или прямой формой — он появится здесь уже с готовым сообщением и, если есть телефон, со скриптом звонка.</b></p></div>';
+ }
+ document.querySelectorAll('.copy').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(decodeURIComponent(b.dataset.copy)));
+ document.querySelectorAll('.notes').forEach(t=>{const key=t.dataset.key;t.value=localStorage.getItem('note_'+key)||'';t.oninput=()=>localStorage.setItem('note_'+key,t.value)});
+ document.querySelectorAll('.status').forEach(s=>s.onchange=()=>{localStorage.setItem('h_'+s.dataset.key,s.value);render()});
+}
 q.oninput=render;kind.onchange=render;s.onchange=render;render();
-</script></body></html>
+</script>
+</body></html>
